@@ -1,47 +1,74 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include "include/list.h"
+#include "include/stack.h"
 
-// Función de comparación para enteros
-int cmp_int(void* a, void* b) {
-    int x = *(int*)a;
-    int y = *(int*)b;
-    if(x < y) return -1;
-    if(x > y) return 1;
-    return 0;
-}
+void stack_print(stack* s) {
+    if(!s) return;
 
-int main() {
-
-    // 1. Crear lista con 10 nodos vacíos
-    list* l = list_create(10);
-    if(l == NULL) {
-        printf("Error al crear la lista\n");
-        return 1;
+    int len = stack_length(s);
+    if(len == 0) {
+        printf("Pila vacía.\n");
+        return;
     }
 
-    // 2. Asignar enteros aleatorios a cada nodo usando set_node
-    for(int i = 0; i < 10; i++) {
-        int* valor = malloc(sizeof(int));
-        *valor = rand() % 100;
-        if(set_node(l, valor) != 0) {
-            printf("Error al setear nodo %d\n", i);
-        }
-    }
+    void** temp = malloc(sizeof(void*) * len); // arreglo temporal para guardar los elementos
+    if(!temp) return;
 
-    // 3. Recorrer lista usando get_next_node y get_data
-    printf("Lista de enteros:\n");
-    node* aux = list_get_head(l);  // necesitarías esta función opaca en list.h
-    while(aux != NULL) {
-        int* val = (int*)get_data(aux);
+    printf("Pila (top a bottom): ");
+    int i = 0;
+    while(!stack_is_empty(s)) {
+        int* val = (int*)pop(s);
         printf("%d ", *val);
-        aux = *get_next_node(aux);
+        temp[i++] = val; // guardamos el puntero temporalmente
     }
     printf("\n");
 
-    // 4. Liberar memoria
-    list_free(&l, true);
+    // Volvemos a llenar la pila en el mismo orden
+    for(i = len - 1; i >= 0; i--) {
+        push(s, temp[i]);
+    }
+
+    free(temp);
+}
+
+int main() {
+    stack* s = stack_new();
+    if(!s) {
+        printf("Error al crear la pila.\n");
+        return 1;
+    }
+
+    // Agregar 15 enteros
+    for(int i = 1; i <= 15; i++) {
+        int* num = malloc(sizeof(int));
+        if(!num) {
+            printf("Error de memoria.\n");
+            stack_free(&s, 1);
+            return 1;
+        }
+        *num = i * 10;
+        push(s, num);
+    }
+
+    // Imprimir la pila
+    stack_print(s);
+
+    // Sacar 5 elementos
+    printf("Sacando 5 elementos...\n");
+    for(int i = 0; i < 5; i++) {
+        int* val = (int*)pop(s);
+        if(val) {
+            printf("Sacado: %d\n", *val);
+            free(val);
+        }
+    }
+
+    // Imprimir la pila restante
+    stack_print(s);
+
+    // Destruir la pila
+    stack_free(&s, 1);
 
     return 0;
 }

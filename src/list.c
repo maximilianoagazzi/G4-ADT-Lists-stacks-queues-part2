@@ -61,6 +61,30 @@ node* list_get_head(list* l)
     return NULL;
 }
 
+node* list_get_next(list* l, int index)
+{
+    if (l != NULL && l->head != NULL && index >= 0 && index < l->size) {
+        node* aux = l->head;
+        for (int i = 0; i < index; i++) {
+            aux = *get_next_node(aux);
+        }
+        return aux;
+    }
+    return NULL; // índice inválido
+}
+
+node* list_get_eol(list* l)
+{
+    if (l != NULL && l->head != NULL) {
+        node* aux = l->head;
+        while (*get_next_node(aux) != NULL) {
+            aux = *get_next_node(aux);
+        }
+        return aux;
+    }
+    return NULL;
+}
+
 void list_free(list** l, int dinamic)  //Destruye la lista y hay que indicarle si los datos en los nodos son dinamicos o no
 {
     void* data;
