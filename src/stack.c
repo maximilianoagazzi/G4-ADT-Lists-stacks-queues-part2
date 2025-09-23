@@ -66,7 +66,7 @@ void* top(stack* s)  //Devuelve el primer elemento de la pila
     return NULL;
 }
 
-int stack_is_empty(stack* s)  //Devuelve 1 si la pila tiene elementos
+int stack_is_empty(stack* s)  //Devuelve 1 si la pila tiene elementos, 0 si no y -1 si hubo un error
 {
     if(s != NULL) {
         if (vector_size(s->body) == 0) {
