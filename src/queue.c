@@ -87,7 +87,7 @@ void* peak(queue* q)  //Devuelve el primer elemento de la cola
     return NULL;
 }
 
-int queue_is_empty(queue* q)  //Devuelve 1 si la cola tiene elementos, 0 si no y -1 si hubo un error
+int queue_is_empty(queue* q)  //Devuelve 1 si la cola no tiene elementos, 0 si no y -1 si hubo un error
 {
     if(q != NULL) {
         if (q->size == 0) {
