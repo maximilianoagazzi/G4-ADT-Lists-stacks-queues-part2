@@ -13,15 +13,17 @@ int main()
         push(s, &nums[i]);
     }
 
-    printf("Contenido de la pila:\n");
-    stack_print(s, print_int);
-    //Ejercicio 10
+    printf("Contenido de la pila de forma iterativa:\n");
+    stack_print_it(s, print_int);
+    printf("Contenido de la pila de forma recursiva:\n");
+    stack_print_rc(s, print_int);
+    //Ejercicio 10a
 
     stack_free(&s, 0);
     return 0;
 }
 
-void stack_print(stack* s, void (*print_fct)(void*)) //Ejercicio 10
+void stack_print_it(stack* s, void (*print_fct)(void*)) //Ejercicio 10a
 {
     stack* aux = stack_new();
     if (s == NULL || aux == NULL) {
@@ -39,6 +41,30 @@ void stack_print(stack* s, void (*print_fct)(void*)) //Ejercicio 10
     stack_free(&aux, 0);
 }
 
+void stack_print_rc(stack* s, void (*print_fct)(void*)) //Ejercicio 10b
+{
+    stack* aux = stack_new();
+    if (s == NULL || aux == NULL) {
+        printf("Pila vacia\n");
+        return;
+    }
+    stack_print_aux(s, aux, print_fct);
+
+    stack_free(&aux, 0);
+}
+
+void stack_print_aux(stack* s, stack* aux, void (*print_fct)(void*)) //Ejercicio 10b
+{
+    if (stack_length(s) == 0) {
+        return;
+    }
+    void* elem = pop(s);
+    print_fct(elem);
+    push(aux, elem);
+    stack_print_aux(s, aux, print_fct);
+    push(s, pop(aux));
+}
+
 void print_int(void* data) //Ejercicio 10
 {
     if (data != NULL) {
@@ -47,3 +73,4 @@ void print_int(void* data) //Ejercicio 10
         printf("NULL\n");
     }
 }
+
