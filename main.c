@@ -3,47 +3,47 @@
 #include "include/list.h"
 #include "include/stack.h"
 #include "include/queue.h"
+#include "include/header.h"
 
-// Función para imprimir todos los elementos de la lista
-void print_list(list* l) {
-    void* data;
-    printf("Lista: ");
-    for (data = list_first(l); data != NULL; data = list_next(l)) {
-        printf("%d ", *(int*)data);
+int main() 
+{
+    stack* s = stack_new();
+    int nums[] = {10, 20, 30, 40, 50};
+    for (int i = 0; i < 5; i++) {
+        push(s, &nums[i]);
     }
-    printf("\n");
+
+    printf("Contenido de la pila:\n");
+    stack_print(s, print_int);
+    //Ejercicio 10
+
+    stack_free(&s, 0);
+    return 0;
 }
 
-int main() {
-    list* l = list_create();
-    if (l == NULL) {
-        printf("Error al crear la lista.\n");
-        return 1;
+void stack_print(stack* s, void (*print_fct)(void*)) //Ejercicio 10
+{
+    stack* aux = stack_new();
+    if (s == NULL || aux == NULL) {
+        printf("Pila vacia\n");
+        return;
     }
-
-    // 1️⃣ Agregar 10 enteros a la lista
-    int nums[10] = {5, 12, 3, 7, 9, 1, 6, 8, 4, 2};
-    for (int i = 0; i < 10; i++) {
-        // Podés usar list_append o list_insert_first
-        list_append(l, &nums[i]);
+    while (stack_length(s) > 0) {
+        void* elem = pop(s);
+        print_fct(elem);
+        push(aux, elem);
     }
-
-    // 2️⃣ Imprimir la lista
-    printf("Lista inicial:\n");
-    print_list(l);
-
-    // 3️⃣ Eliminar 5 elementos (los primeros que encuentre)
-    for (int i = 0; i < 5; i++) {
-        list_first(l);       // apuntamos al primer elemento
-        list_remove(l);      // eliminamos el actual
+    while (stack_length(aux) > 0) {
+        push(s, pop(aux));
     }
+    stack_free(&aux, 0);
+}
 
-    // 4️⃣ Imprimir la lista después de eliminar 5 elementos
-    printf("Lista después de eliminar 5 elementos:\n");
-    print_list(l);
-
-    // 5️⃣ Liberar memoria de la lista
-    list_free(&l, 0);  // 0 porque los enteros no son dinámicos
-
-    return 0;
+void print_int(void* data) //Ejercicio 10
+{
+    if (data != NULL) {
+        printf("%d\n", *(int*)data);
+    } else {
+        printf("NULL\n");
+    }
 }
