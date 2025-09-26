@@ -5,8 +5,8 @@
 #include "include/queue.h"
 #include "include/header.h"
 
-int stack_sum(stack* s);
-int queue_sum(queue* q);
+stack* stack_copy(stack* s);
+void* elem_copy(void* elem);
 
 int main() 
 {
@@ -18,7 +18,7 @@ int main()
 
     printf("Contenido de la pila de forma iterativa:\n");
     stack_print_it(s, print_int);
-    printf("\n\nContenido de la pila de forma recursiva:\n");
+    printf("\nContenido de la pila de forma recursiva:\n");
     stack_print_rc(s, print_int);
     //Ejercicio 10a
 
@@ -27,16 +27,31 @@ int main()
     for(int i=0; i<5; i++) {
         enqueue(q, &nums_q[i]);
     }
-    printf("\n\nContenido de la cola:\n");
+    printf("\nContenido de la cola:\n");
     queue_print(q, print_int);
     //Ejercicio 11
 
-    printf("\n\nLa suma de los elementos de la pila es: %d\n", stack_sum(s));
-    printf("La suma de los elementos de la cola es: %d\n", queue_sum(q));
+    printf("\nLa suma de los elementos de la pila es: %d\n", stack_sum(s));
+    printf("\nLa suma de los elementos de la cola es: %d\n", queue_sum(q));
     //Ejercicio 12
+
+    printf("\nLa cola invertida de forma iterativa es:\n");
+    queue_invert_it(q);
+    queue_print(q, print_int);
+    queue_invert_it(q); //La vuelvo a invertir para dejarla como estaba
+    printf("\nLa cola invertida de forma recursiva es:\n");
+    queue_invert_rc(q);
+    queue_print(q, print_int);
+    //Ejercicio 13
+
+    printf("\nCopia de la pila:\n");
+    stack* s_copy = stack_copy(s);
+    stack_print_it(s_copy, print_int);
+    //Ejercicio 14
 
     stack_free(&s, 0);
     queue_free(&q, 0);
+    stack_free(&s_copy, 1);
     return 0;
 }
 
@@ -55,6 +70,7 @@ void stack_print_it(stack* s, void (*print_fct)(void*)) //Ejercicio 10a
     while(stack_length(aux) > 0) {
         push(s, pop(aux));
     }
+    printf("\n");
     stack_free(&aux, 0);
 }
 
@@ -66,6 +82,7 @@ void stack_print_rc(stack* s, void (*print_fct)(void*)) //Ejercicio 10b
         return;
     }
     stack_print_aux(s, aux, print_fct);
+    printf("\n");
 
     stack_free(&aux, 0);
 }
@@ -104,6 +121,7 @@ void queue_print(queue* q, void (*print_fct)(void*)) //Ejercicio 11
         print_fct(elem);
         enqueue(q, elem);
     }
+    printf("\n");
 }
 
 int stack_sum(stack* s) //Ejercicio 12a
@@ -140,4 +158,71 @@ int queue_sum(queue* q) //Ejercicio 12b
         enqueue(q, elem);
     }
     return sum;
+}
+
+void queue_invert_it(queue* q) //Ejercicio 13a
+{
+    if(q != NULL) {
+        stack* aux = stack_new();
+        if(aux != NULL) {
+            while(queue_length(q) > 0) {
+                void* elem = dequeue(q);
+                push(aux, elem);
+            }
+            while(stack_length(aux) > 0) {
+                enqueue(q, pop(aux));
+            }
+            stack_free(&aux, 0);
+        }
+    }
+}
+
+void queue_invert_rc(queue* q) //Ejercicio 13b
+{
+    if(q != NULL) {
+        if(queue_length(q) > 0) {
+            void* elem = dequeue(q);
+            queue_invert_rc(q);
+            enqueue(q, elem);
+        }
+    }
+}
+
+stack* stack_copy(stack* s) //Ejercicio 14
+{
+    if(s == NULL) {
+        return NULL;
+    }
+    stack* copy = stack_new();
+    stack* aux1 = stack_new();
+    stack* aux2 = stack_new();
+    if(copy != NULL && aux1 != NULL && aux2 != NULL) {
+        while(stack_length(s) > 0) {
+            void* elem = pop(s);
+            push(aux1, elem);
+            push(aux2, elem_copy(elem)); //Hago una copia del elemento
+        }
+
+        while(stack_length(aux1) > 0) {
+            push(s, pop(aux1));
+            push(copy, pop(aux2));
+        }
+        stack_free(&aux1, 0);
+        stack_free(&aux2, 0);
+        return copy;
+    }
+    return NULL;
+}
+
+void* elem_copy(void* elem)  //Ejercicio 14
+{
+    if(elem == NULL) {
+        return NULL;
+    }
+    void* new_elem = malloc(sizeof(int));
+    if(new_elem != NULL) {
+        *(int*)new_elem = *(int*)elem;
+        return new_elem;
+    }
+    return NULL;
 }
