@@ -5,8 +5,7 @@
 #include "include/queue.h"
 #include "include/header.h"
 
-stack* stack_copy(stack* s);
-void* elem_copy(void* elem);
+queue* queue_copy(queue* q);
 
 int main() 
 {
@@ -49,9 +48,15 @@ int main()
     stack_print_it(s_copy, print_int);
     //Ejercicio 14
 
+    printf("\nCopia de la cola:\n");
+    queue* q_copy = queue_copy(q);
+    queue_print(q_copy, print_int);
+    //Ejercicio 15
+
     stack_free(&s, 0);
     queue_free(&q, 0);
     stack_free(&s_copy, 1);
+    queue_free(&q_copy, 1);
     return 0;
 }
 
@@ -194,21 +199,18 @@ stack* stack_copy(stack* s) //Ejercicio 14
         return NULL;
     }
     stack* copy = stack_new();
-    stack* aux1 = stack_new();
-    stack* aux2 = stack_new();
-    if(copy != NULL && aux1 != NULL && aux2 != NULL) {
+    stack* aux = stack_new();
+    if(copy != NULL && aux != NULL) {
         while(stack_length(s) > 0) {
-            void* elem = pop(s);
-            push(aux1, elem);
-            push(aux2, elem_copy(elem)); //Hago una copia del elemento
+            push(aux, pop(s));
         }
 
-        while(stack_length(aux1) > 0) {
-            push(s, pop(aux1));
-            push(copy, pop(aux2));
+        while(stack_length(aux) > 0) {
+            void* elem = pop(aux);
+            push(s, elem);
+            push(copy, elem_copy(elem));  //Los nuevos elementos usan memoria dinamica
         }
-        stack_free(&aux1, 0);
-        stack_free(&aux2, 0);
+        stack_free(&aux, 0);
         return copy;
     }
     return NULL;
@@ -223,6 +225,27 @@ void* elem_copy(void* elem)  //Ejercicio 14
     if(new_elem != NULL) {
         *(int*)new_elem = *(int*)elem;
         return new_elem;
+    }
+    return NULL;
+}
+
+queue* queue_copy(queue* q)  //Ejercicio 15
+{
+    if(q == NULL) return NULL;
+    queue* copy = queue_new();
+    queue* aux = queue_new();
+    if(copy != NULL && aux != NULL) {
+        while(queue_length(q) > 0) {
+            enqueue(aux, dequeue(q));
+        }
+
+        while(queue_length(aux) > 0) {
+            void* elem = dequeue(aux);
+            enqueue(q, elem);
+            enqueue(copy, elem_copy(elem));  //Los nuevos elementos usan memoria dinamica
+        }
+        queue_free(&aux, 0);
+        return copy;
     }
     return NULL;
 }
