@@ -14,6 +14,8 @@ int queue_sum(queue* q);
 void queue_invert_it(queue* q);
 void queue_invert_rc(queue* q);
 stack* stack_copy(stack* s);
+queue* queue_copy(queue* q);
+int es_palindromo(char* string);
 
 void* elem_copy(void* elem);
 void print_int(void* data);

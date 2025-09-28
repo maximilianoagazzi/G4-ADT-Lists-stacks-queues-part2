@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "include/list.h"
 #include "include/stack.h"
 #include "include/queue.h"
 #include "include/header.h"
-
-queue* queue_copy(queue* q);
 
 int main() 
 {
@@ -52,6 +51,22 @@ int main()
     queue* q_copy = queue_copy(q);
     queue_print(q_copy, print_int);
     //Ejercicio 15
+
+    char string1[] = "HOLANDA NO ES UN PAIS";
+    char string2[] = "LA RUTA NOS APORTO OTRO PASO NATURAL";
+    int r = es_palindromo(string1);
+    if(r == 1) {
+        printf("\nEl string %s es palindromo\n", string1);
+    } else {
+        printf("\nEl string %s no es palindromo\n", string1);
+    }
+    r = es_palindromo(string2);
+    if(r == 1) {
+        printf("\nEl string %s es palindromo\n", string2);
+    } else {
+        printf("\nEl string %s no es palindromo\n", string2);
+    }
+    //Ejercicio 18
 
     stack_free(&s, 0);
     queue_free(&q, 0);
@@ -248,4 +263,30 @@ queue* queue_copy(queue* q)  //Ejercicio 15
         return copy;
     }
     return NULL;
+}
+
+int es_palindromo(char* string)  //Ejercicio 18
+{
+    if(string == NULL) return -1;
+
+    int pal = 1;
+    stack* s = stack_new();
+    if(s != NULL) {
+        for (int i=0; i<strlen(string); i++) {
+            if(string[i] != ' ') {
+                push(s, &string[i]);
+            }
+        }
+        int i=0;
+        while(stack_length(s) > 0 && pal == 1) {
+            if(string[i] != ' ' && string[i] != *(char*)pop(s)) {
+                pal = 0;
+            }
+            i++;
+        }
+        stack_free(&s, 0);
+    } else {
+        pal = -1;
+    }
+    return pal;
 }
